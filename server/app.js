@@ -3,9 +3,13 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import dbConnect, { isDbConnected } from './config/mongoose.config.js';
 import { requireDb } from './middlewares/dbMiddleware.js';
 import Router from './routes/routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -15,7 +19,7 @@ app.use(morgan('dev'));
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/images', express.static(path.join(process.cwd(), 'upload/images')));
+app.use('/images', express.static(path.join(__dirname, 'upload/images')));
 
 // Local dev: connect in background. Vercel: requireDb connects per request.
 if (!process.env.VERCEL) {

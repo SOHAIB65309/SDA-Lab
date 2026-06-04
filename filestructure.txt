@@ -150,7 +150,6 @@
         |-- reportWebVitals.js
         |-- setupTests.js
     |-- tailwind.config.js
-    |-- vercel.json
 |-- DEPLOY.md
 |-- package-lock.json
 |-- package.json
@@ -221,6 +220,5 @@
         |-- 1735124095070-product_19.png
         |-- 1735124534122-exclusive_image.png
         |-- 1735127471366-product_30.png
-    |-- versel.json
 |-- SETUP.md
 |-- vercel.json

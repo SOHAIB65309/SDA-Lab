@@ -2,12 +2,16 @@
   "name": "shopease",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm run build --prefix client",
-    "vercel-build": "npm install --prefix client && npm run build --prefix client",
-    "server": "npm start --prefix server",
-    "client": "npm start --prefix client",
+    "build": "npm run build -w client",
+    "vercel-build": "npm install && npm run build -w client",
+    "server": "npm start -w server",
+    "client": "npm start -w client",
     "kill-port": "npx kill-port 9999"
   },
   "dependencies": {
