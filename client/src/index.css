@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap');
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f0f7ff;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #e0f0ff; }
+::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 3px; }
+
+/* ── Gradient text ── */
+.sky-text {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Cards ── */
+.shop-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e0f2fe;
+  box-shadow: 0 2px 12px rgba(14,165,233,0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.shop-card:hover {
+  border-color: #38bdf8;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(14,165,233,0.18);
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  color: #ffffff;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  display: inline-block;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0284c7, #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #0ea5e9;
+  font-weight: 600;
+  padding: 11px 28px;
+  border-radius: 50px;
+  border: 2px solid #0ea5e9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: inline-block;
+  text-decoration: none;
+}
+.btn-outline:hover {
+  background: #0ea5e9;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-white {
+  background: #ffffff;
+  color: #0ea5e9;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: inline-block;
+  text-decoration: none;
+}
+.btn-white:hover {
+  background: #f0f9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* ── Badge ── */
+.badge {
+  background: linear-gradient(135deg, #e0f2fe, #ddd6fe);
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.badge-sale {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #d97706;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* ── Input ── */
+.input-light {
+  background: #ffffff;
+  border: 2px solid #e0f2fe;
+  border-radius: 12px;
+  color: #1e293b;
+  padding: 12px 16px;
+  width: 100%;
+  transition: border-color 0.3s;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+}
+.input-light::placeholder { color: #94a3b8; }
+.input-light:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56,189,248,0.12); }
+
+/* ── Section divider ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #bae6fd, transparent);
+  margin: 32px 0;
+}
+
+/* ── Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.5s ease forwards; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #e0f2fe 25%, #f0f9ff 50%, #e0f2fe 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ── Star ── */
+.star-filled { color: #f59e0b; }
+.star-empty  { color: #e2e8f0; }
+
+/* ── Section bg ── */
+.section-light { background: #ffffff; }
+.section-sky   { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); }
+.section-grad  { background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%); }
