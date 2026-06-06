@@ -1,7 +1,7 @@
 import API from '../../config/api.js';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-
+
 const CATEGORIES = [
   { group: 'Fashion', items: [
     { value: 'mens',        label: "Men's Clothing",     icon: '👔' },
@@ -52,6 +52,9 @@ const EditProduct = () => {
     marginBottom: 6,
   };
 
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -59,6 +62,7 @@ const EditProduct = () => {
         if (!res.ok) throw new Error('Failed to fetch product');
         const data = await res.json();
         setProduct(data);
+        setImagePreview(data.image);
       } catch (err) {
         setError('Failed to load product details');
       } finally {
@@ -67,6 +71,14 @@ const EditProduct = () => {
     };
     fetchProduct();
   }, [id]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,18 +94,20 @@ const EditProduct = () => {
     }
     setSaving(true);
     setError('');
+
+    const formData = new FormData();
+    formData.append('name', product.name);
+    formData.append('category', product.category);
+    formData.append('new_price', product.new_price);
+    if (product.old_price) formData.append('old_price', product.old_price);
+    formData.append('status', product.status);
+    formData.append('stars', product.stars || 0);
+    if (imageFile) formData.append('image', imageFile);
+
     try {
       const res = await fetch(`${API}/api/editproducts/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name:      product.name,
-          category:  product.category,
-          new_price: Number(product.new_price),
-          old_price: product.old_price ? Number(product.old_price) : null,
-          status:    product.status,
-          stars:     Number(product.stars) || 0,
-        }),
+        body: formData,
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -267,23 +281,43 @@ const EditProduct = () => {
               </div>
             </div>
 
-            {/* Current Image */}
-            {product.image && (
-              <div>
-                <label style={labelStyle}>Current Image</label>
-                <div className="flex items-center gap-4 p-3 rounded-xl"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <img src={product.image} alt={product.name}
-                    className="w-20 h-20 object-cover rounded-xl flex-shrink-0"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/80?text=?'; }} />
-                  <div>
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                      Image is stored on the server. To change the image, delete this product and re-add it with a new image.
-                    </p>
+            {/* Image Upload */}
+            <div>
+              <label style={labelStyle}>Product Image</label>
+              <div className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                {imagePreview ? (
+                  <div className="relative group">
+                    <img src={imagePreview} alt="Preview"
+                      className="w-32 h-32 object-cover rounded-xl border border-white/10" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                      <p className="text-[10px] text-white font-bold">CURRENT PREVIEW</p>
+                    </div>
                   </div>
+                ) : (
+                  <div className="w-32 h-32 rounded-xl flex items-center justify-center border-2 border-dashed border-white/10"
+                    style={{ background: 'rgba(255,255,255,0.02)' }}>
+                    <span className="text-2xl">🖼️</span>
+                  </div>
+                )}
+                <div className="flex-1 space-y-3">
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    {imageFile ? `✓ Selected: ${imageFile.name}` : 'Change the product image by selecting a new file below.'}
+                  </p>
+                  <label className="inline-block px-4 py-2 rounded-lg text-xs font-bold cursor-pointer transition-all"
+                    style={{ background: 'rgba(212,175,55,0.1)', color: '#d4af37', border: '1px solid #d4af37' }}>
+                    📁 {imageFile ? 'Change File' : 'Select New Image'}
+                    <input type="file" accept="image/*" onChange={handleFileChange} hidden />
+                  </label>
+                  {imageFile && (
+                    <button type="button" onClick={() => { setImageFile(null); setImagePreview(product.image); }}
+                      className="ml-2 text-xs font-semibold text-red-400 hover:text-red-300">
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Submit */}
             <button type="submit" disabled={saving}

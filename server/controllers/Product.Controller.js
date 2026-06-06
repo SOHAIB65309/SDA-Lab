@@ -56,9 +56,17 @@ export const createProduct = async (req, res, next) => {
       return res.status(400).json({ message: 'Product image is required' });
     }
 
-    // Construct the image URL dynamically
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const imageUrl = `${baseUrl}/images/${req.file.filename}`;
+    // Construct the image URL
+    let imageUrl;
+    if (req.file.buffer) {
+      // If we have a buffer (Memory Storage / Vercel), convert to Data URI for permanent storage in DB
+      const b64 = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${b64}`;
+    } else {
+      // If we have a filename (Disk Storage / Local), use the dynamic server path
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      imageUrl = `${baseUrl}/images/${req.file.filename}`;
+    }
 
     // Ensure required fields are provided
     if (!name || !category || !new_price || !uploaded_by) {
@@ -108,7 +116,7 @@ export const createProduct = async (req, res, next) => {
 // Update a product by ID
 export const updateProduct = async (req, res, next) => {
   const { id } = req.params;
-  const { name, category, image, new_price, old_price, status, stars } = req.body;
+  const { name, category, new_price, old_price, status, stars } = req.body;
 
   try {
     // Find the product by ID
@@ -118,31 +126,42 @@ export const updateProduct = async (req, res, next) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Handle new image upload if provided
+    if (req.file) {
+      if (req.file.buffer) {
+        // Vercel / Memory Storage
+        const b64 = req.file.buffer.toString('base64');
+        product.image = `data:${req.file.mimetype};base64,${b64}`;
+      } else {
+        // Local / Disk Storage
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        product.image = `${baseUrl}/images/${req.file.filename}`;
+      }
+    }
+
     // Validate incoming data based on your schema
-    if (new_price !== undefined && new_price < 0) {
-      return res.status(400).json({ message: 'New price cannot be negative' });
+    if (new_price !== undefined && new_price !== null && new_price !== '') {
+      const parsedPrice = parseFloat(new_price);
+      if (parsedPrice < 0) return res.status(400).json({ message: 'New price cannot be negative' });
+      product.new_price = parsedPrice;
     }
 
-    if (old_price !== undefined && old_price < 0) {
-      return res.status(400).json({ message: 'Old price cannot be negative' });
+    if (old_price !== undefined && old_price !== null && old_price !== '') {
+      const parsedOld = parseFloat(old_price);
+      if (parsedOld < 0) return res.status(400).json({ message: 'Old price cannot be negative' });
+      product.old_price = parsedOld;
     }
 
-    if (old_price !== undefined && old_price < new_price) {
-      return res.status(400).json({ message: 'Old price must be greater than or equal to new price' });
+    if (stars !== undefined && stars !== null && stars !== '') {
+      const parsedStars = parseFloat(stars);
+      if (parsedStars < 0 || parsedStars > 5) return res.status(400).json({ message: 'Rating must be between 0 and 5 stars' });
+      product.stars = parsedStars;
     }
 
-    if (stars !== undefined && (stars < 0 || stars > 5)) {
-      return res.status(400).json({ message: 'Rating must be between 0 and 5 stars' });
-    }
-
-    // Update product fields with the request body data
-    product.name = name || product.name;
-    product.category = category || product.category;
-    product.image = image || product.image;
-    product.new_price = new_price !== undefined ? new_price : product.new_price;
-    product.old_price = old_price !== undefined ? old_price : product.old_price;
-    product.status = status || product.status;
-    product.stars = stars !== undefined ? stars : product.stars;
+    // Update other fields
+    if (name) product.name = name;
+    if (category) product.category = category;
+    if (status) product.status = status;
 
     // Save the updated product
     await product.save();
@@ -150,7 +169,8 @@ export const updateProduct = async (req, res, next) => {
     // Return the updated product as response
     res.status(200).json(product);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating product', error });
+    console.error('Error updating product:', error);
+    res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 };
 

@@ -26,8 +26,17 @@ export const createBanner = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'Banner image is required' });
     }
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const imageUrl = `${baseUrl}/images/${req.file.filename}`;
+    // Construct the image URL
+    let imageUrl;
+    if (req.file.buffer) {
+      // If we have a buffer (Memory Storage / Vercel), convert to Data URI for permanent storage in DB
+      const b64 = req.file.buffer.toString('base64');
+      imageUrl = `data:${req.file.mimetype};base64,${b64}`;
+    } else {
+      // If we have a filename (Disk Storage / Local), use the dynamic server path
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      imageUrl = `${baseUrl}/images/${req.file.filename}`;
+    }
     const { title, subtitle, order } = req.body;
 
     const banner = new BannerModel({

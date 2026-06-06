@@ -23,7 +23,7 @@ router.get('/products/:id', getProductById);
 router.get('/products/:id/review', getReviewById);
 router.post('/products/:id/reviews', PostReviewById);
 router.post('/addproduct', upload.single('image'), createProduct);
-router.put('/editproducts/:id', updateProduct);
+router.put('/editproducts/:id', upload.single('image'), updateProduct);
 router.delete('/removeproduct/:id', deleteProduct);
 
 // Banner routes
