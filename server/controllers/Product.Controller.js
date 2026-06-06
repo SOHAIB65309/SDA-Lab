@@ -56,8 +56,9 @@ export const createProduct = async (req, res, next) => {
       return res.status(400).json({ message: 'Product image is required' });
     }
 
-    // Construct the image URL
-    const imageUrl = `http://localhost:${process.env.PORT || 9999}/images/${req.file.filename}`;
+    // Construct the image URL dynamically
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const imageUrl = `${baseUrl}/images/${req.file.filename}`;
 
     // Ensure required fields are provided
     if (!name || !category || !new_price || !uploaded_by) {

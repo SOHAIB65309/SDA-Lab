@@ -26,7 +26,8 @@ export const createBanner = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'Banner image is required' });
     }
-    const imageUrl = `http://localhost:${process.env.PORT || 9999}/images/${req.file.filename}`;
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const imageUrl = `${baseUrl}/images/${req.file.filename}`;
     const { title, subtitle, order } = req.body;
 
     const banner = new BannerModel({

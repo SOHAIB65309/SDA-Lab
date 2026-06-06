@@ -182,7 +182,7 @@ export const Checkout = async (req, res) => {
         quantity: item.quantity,
       })),
       mode: 'payment',
-      success_url: `${process.env.SERVER_URL || 'http://localhost:9999'}/api/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.SERVER_URL || `${req.protocol}://${req.get('host')}`}/api/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL || 'http://localhost:3000'}/checkout`,
       metadata: {
         shipping: JSON.stringify(shippingAddress),
